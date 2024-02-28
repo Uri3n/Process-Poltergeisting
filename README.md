@@ -1,5 +1,5 @@
 # Process-Poltergeisting
-## Utilizing A Windows File Stream Exploit To Perform A Variation Of Process Ghosting.
+## A PoC That Uses A Windows File Stream Exploit To Perform A Variation Of Process Ghosting.
 
 # Background
 **Process Ghosting** is a technique that has been around for quite some time. 
