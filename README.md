@@ -15,7 +15,7 @@ This means that a remote thread must be created, which is almost guaranteed to g
 # Poltergeisting
 **Process Poltergeisting** is a variation of Ghosting that allows for the same benefits without requiring remote thread
 creation. It works by first writing a malicious PE file into a temporary one, much like Ghosting. However, instead of deleting the file
-right away, we create a process from it immediately.
+right away, we create a process from it immediately, using the fully documented and supported win32 function, **CreateProcessW**.
 
 ### Okay, so how do we delete the file then?
 We can delete the file afterward by abusing Windows alternate file streams. When you attempt to delete a file on disk, Windows will first check
@@ -27,7 +27,8 @@ of the main file stream has changed. Because of this, we are now free to delete 
 directory entry we have just created, which is still associated with the same disk contents.
 
 ### Spoofing Process Information
-Similarly to Ghosting, I performed some basic spoofing on the child process in this PoC to make it appear more legitimate.
+Similarly to Ghosting, I performed some basic spoofing on the child process in this PoC to make it appear more legitimate, making it seem as though
+it's a harmless RuntimeBroker process.
 ![PG1](https://github.com/Uri3n/Process-Poltergeisting/assets/153572153/ef4d0066-5587-43e6-9957-618220f51cc0)
 
 As you can see, our malicious process is "verified" by the Microsoft Corporation. Wow! Very Legit!
@@ -35,7 +36,7 @@ As you can see, our malicious process is "verified" by the Microsoft Corporation
 ### Payload Execution
 Something extremely important to note is that the Windows loader performs some basic antimalware scanning before it creates a process. If we attempt to put a highly signatured payload
 inside of the PE we write into the temp file, this will get flagged right away by Defender. It's important to note though that this is NOT the same as the periodic on-disk scanning that 
-Defender usually performs. This happens right before the loader loads an image into memory. 
+Defender usually performs. This happens right before the loader loads an executable into memory. 
 
 ### How do we get around this? Wouldn't this mean we would need to create executable memory ourselves after the fact?
 The Windows loader utilizes the **Characteristics** bitmask inside of a PE file's section headers to determine the appropriate memory permissions for a given executable's sections.
