@@ -34,7 +34,7 @@ it's a harmless RuntimeBroker process.
 As you can see, our malicious process is "verified" by the Microsoft Corporation. Wow! Very Legit!
 
 ### Payload Execution
-Something extremely important to note is that the Windows loader performs some basic antimalware scanning before it creates a process. If we attempt to put a highly signatured payload
+Something extremely important to note is that Windows Defender AV performs some basic antimalware scanning before it creates a process. If we attempt to put a highly signatured payload
 inside of the PE we write into the temp file, this will get flagged right away by Defender. It's important to note though that this is NOT the same as the periodic on-disk scanning that 
 Defender usually performs. This happens right before the loader loads an executable into memory. 
 
