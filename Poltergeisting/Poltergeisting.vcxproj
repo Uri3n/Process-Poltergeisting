@@ -128,21 +128,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Injection.cpp" />
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="src\Injection.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="defs.hpp" />
-    <ClInclude Include="Injection.hpp" />
-    <ClInclude Include="Main.hpp" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="Structures.hpp" />
+    <ClInclude Include="include\defs.hpp" />
+    <ClInclude Include="include\Injection.hpp" />
+    <ClInclude Include="include\Main.hpp" />
+    <ClInclude Include="bin\resource.h" />
+    <ClInclude Include="include\Structures.hpp" />
+    <ClInclude Include="include\Utils.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resource.rc" />
+    <ResourceCompile Include="bin\Resource.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="pe_image.ico" />
+    <Image Include="bin\pe_image.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
