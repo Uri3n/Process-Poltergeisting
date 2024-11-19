@@ -1,6 +1,15 @@
 # Process-Poltergeisting
 ## A PoC That Uses A Windows File Stream Exploit To Perform A Variation Of Process Ghosting.
 
+# Important
+This directory contains a resource that the MSVC compiler builds into the project.
+This resource is a custom Portable Executable file with special page permissions
+set for it's .text section. It's used by the PoC as a decoy to write the calculator payload into.
+If you don't feel comfortable running something like this on your computer (understandable,
+since you can't verify the file's contents) feel free to test the PoC on a VM, or,
+implement the technique for yourself. You'll need a PE file with RWX permissions on it's .text section,
+which I go over in the writeup linked in the README. Best of luck to you.
+
 # Background
 **Process Ghosting** is a technique that has been around for quite some time. 
 Long story short, it involves writing a malicious PE file into a temp file on disk,
