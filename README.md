@@ -1,5 +1,4 @@
 # Process-Poltergeisting
-## A PoC That Uses A Windows File Stream Exploit To Perform A Variation Of Process Ghosting.
 
 # Important
 This directory contains a resource that the MSVC compiler builds into the project.
